@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grade Calculator</title>
+  <style>
+    .container {
+      width: 300px;
+      margin: 30px auto;
+      padding: 20px 30px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0 15px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 15px;
+      min-height: 24px;
+      color: #d9534f; /* red color for alerts */
+    }
+    #result.valid {
+      color: #28a745; /* green for success */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculate Grade</h2>
+    <form id="gradeForm" onsubmit="getGrade(event)">
+      <label for="score">Enter Score (0-100):</label>
+      <input type="number" id="score" name="score" min="0" max="100" step="1" required />
+      <br />
+      <button type="submit">Submit</button>
+      <button type="button" onclick="goBack()">Back</button>
+    </form>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function getGrade(event) {
+      event.preventDefault();
+      const resultEl = document.getElementById("result");
+      const scoreInput = document.getElementById("score");
+      const scoreStr = scoreInput.value.trim();
+
+      // Reset result style
+      resultEl.classList.remove('valid');
+      resultEl.style.color = '#d9534f'; // red
+
+      // Validate empty input
+      if (scoreStr === "") {
+        resultEl.textContent = "Please enter a score.";
+        return;
+      }
+
+      const score = parseInt(scoreStr);
+
+      // Validate valid number and range 0-100
+      if (isNaN(score) || score < 0 || score > 100) {
+        resultEl.textContent = "Please enter a valid score between 0 and 100.";
+        return;
+      }
+
+      let grade = "";
+      if (score >= 90) {
+        grade = "A";
+      } else if (score >= 80) {
+        grade = "B";
+      } else if (score >= 70) {
+        grade = "C";
+      } else if (score >= 60) {
+        grade = "D";
+      } else {
+        grade = "F";
+      }
+
+      resultEl.textContent = `You got "${grade}" grade.`;
+      resultEl.classList.add('valid');
+      resultEl.style.color = '#28a745'; // green
+    }
+
+    function goBack() {
+      const form = document.getElementById("gradeForm");
+      const resultEl = document.getElementById("result");
+
+      form.reset();
+      resultEl.textContent = "";
+      resultEl.classList.remove('valid');
+      resultEl.style.color = '#d9534f'; // red for future validation errors
+    }
+  </script>
+</body>
+</html>

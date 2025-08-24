@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Unit Converter</title>
+  <style>
+   body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #e0e5ec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background: #e0e5ec;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 10px 10px 30px #c2c8d0, -10px -10px 30px #ffffff;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.selector {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Spacing for selector elements */
+}
+
+.selector label {
+    margin-bottom: 0; /* Override default label margin */
+}
+
+label {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 15px;
+  display: block; /* Ensures labels are on their own line */
+}
+
+select, input[type="number"], button {
+  font-size: 1em;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #e0e5ec;
+  box-shadow: inset 4px 4px 6px #c8ccd1, inset -4px -4px 6px #f0f5fa;
+  width: calc(100% - 24px); /* Account for padding */
+  max-width: 300px; /* Limit width */
+  color: #333;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  box-shadow: inset 2px 2px 5px #bec4cb, inset -2px -2px 5px #f0f5fa;
+}
+
+button {
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 6px 6px 10px #c2c8d0, -6px -6px 10px #ffffff;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  padding: 12px 25px;
+  margin-top: 20px;
+}
+
+button:hover {
+  background: #d6dce4;
+  box-shadow: 4px 4px 8px #c2c8d0, -4px -4px 8px #ffffff;
+}
+
+button:active {
+  box-shadow: inset 2px 2px 5px #c2c8d0, inset -2px -2px 5px #ffffff;
+}
+
+.converter-box {
+  margin-top: 30px;
+  background: #e0e5ec;
+  padding: 25px 20px; /* Adjusted padding */
+  border-radius: 20px;
+  box-shadow: inset 7px 7px 15px #c2c8d0, inset -7px -7px 15px #ffffff;
+}
+
+.conversion-row {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Spacing between input and select */
+    margin-bottom: 25px; /* Space below the input/unit row */
+}
+
+.conversion-row input, .conversion-row select {
+    margin: 0; /* Remove default margin to control spacing with gap */
+    flex-grow: 1; /* Allow them to grow */
+    max-width: 150px; /* Limit individual element width */
+}
+
+.conversion-row input {
+    min-width: 120px; /* Ensure input is not too small */
+}
+
+#result {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-top: 25px;
+  padding: 10px;
+  background: #e0e5ec;
+  border-radius: 10px;
+  box-shadow: inset 2px 2px 5px #c2c8d0, inset -2px -2px 5px #ffffff;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.restart-btn {
+  margin-top: 30px;
+  color: #c0392b; /* A subtle red for restart */
+}
+
+.restart-btn:hover {
+  background: #f0d6d6; /* Lighter red on hover */
+}
+
+/* Responsive adjustments */
+@media (min-width: 600px) {
+  .selector {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .selector select, .selector button {
+    margin: 0 10px;
+  }
+}
+  </style>
+</head>
+<body>
+ <div class="container">
+    <h1>Unit Converter</h1>
+
+    <div class="selector">
+      <label for="conversionType">Choose a conversion type:</label>
+      <select id="conversionType">
+        <option value="">--Select--</option>
+        <option value="length">Length</option>
+        <option value="height">Height</option>
+        <option value="temperature">Temperature</option>
+        <option value="area">Area</option>
+      </select>
+      <button onclick="showConverter()">Next</button>
+    </div>
+
+    <div id="converterContainer">
+      </div>
+
+  </div>
+
+  <script>
+  // --- Conversion Data ---
+const units = {
+  length: [
+    { value: "km", text: "Kilometers" },
+    { value: "m", text: "Meters" },
+    { value: "mile", text: "Miles" },
+    { value: "yard", text: "Yards" }
+  ],
+  height: [
+    { value: "feet", text: "Feet" },
+    { value: "inch", text: "Inches" },
+    { value: "cm_height", text: "Centimeters" } // Distinguish from length cm
+  ],
+  temperature: [
+    { value: "celsius", text: "°C (Celsius)" },
+    { value: "fahrenheit", text: "°F (Fahrenheit)" },
+    { value: "kelvin", text: "K (Kelvin)" }
+  ],
+  area: [
+    { value: "sqm", text: "m² (Square Meters)" },
+    { value: "sqft", text: "ft² (Square Feet)" }
+  ]
+};
+
+// Map conversion keys to functions and target units
+const conversionFormulas = {
+  // Length
+  km_to_m: (val) => val * 1000,
+  m_to_km: (val) => val / 1000,
+  mile_to_km: (val) => val * 1.60934,
+  km_to_mile: (val) => val / 1.60934,
+  yard_to_m: (val) => val * 0.9144,
+  m_to_yard: (val) => val / 0.9144,
+  mile_to_yard: (val) => val * 1760,
+  yard_to_mile: (val) => val / 1760,
+  km_to_yard: (val) => val * 1093.61,
+  yard_to_km: (val) => val / 1093.61,
+  m_to_mile: (val) => val / 1609.34,
+  mile_to_m: (val) => val * 1609.34,
+  // Add other length conversions as needed for all combinations
+  // e.g., m_to_yard, yard_to_m, etc. for comprehensive coverage
+  // For simplicity, let's just make sure the pairs in the select box are covered for common use
+
+  // Height
+  feet_to_inch: (val) => val * 12,
+  inch_to_feet: (val) => val / 12,
+  feet_to_cm_height: (val) => val * 30.48,
+  cm_height_to_feet: (val) => val / 30.48,
+  inch_to_cm_height: (val) => val * 2.54,
+  cm_height_to_inch: (val) => val / 2.54,
+
+  // Temperature
+  celsius_to_fahrenheit: (val) => (val * 9/5) + 32,
+  fahrenheit_to_celsius: (val) => (val - 32) * 5/9,
+  celsius_to_kelvin: (val) => val + 273.15,
+  kelvin_to_celsius: (val) => val - 273.15,
+  fahrenheit_to_kelvin: (val) => (val - 32) * 5/9 + 273.15,
+  kelvin_to_fahrenheit: (val) => (val - 273.15) * 9/5 + 32,
+
+  // Area
+  sqm_to_sqft: (val) => val * 10.7639,
+  sqft_to_sqm: (val) => val / 10.7639
+};
+
+function getUnitDisplay(unitValue) {
+    // Helper to get the correct display text for a unit value
+    for (const type in units) {
+        for (const unit of units[type]) {
+            if (unit.value === unitValue) {
+                return unit.text;
+            }
+        }
+    }
+    return unitValue; // Fallback if not found
+}
+
+function showConverter() {
+  const type = document.getElementById("conversionType").value;
+  const container = document.getElementById("converterContainer");
+  container.innerHTML = ''; // clear previous content
+
+  if (!type) {
+    container.innerHTML = '<p style="color: #c0392b; font-weight: bold;">Please select a conversion type.</p>';
+    return;
+  }
+
+  let unitOptions = '';
+  if (units[type]) {
+    unitOptions = units[type].map(unit => `<option value="${unit.value}">${unit.text}</option>`).join('');
+  } else {
+    unitOptions = '<option value="">No units available</option>';
+  }
+
+  container.innerHTML = `
+    <div class="converter-box">
+      <div class="conversion-row">
+        <input type="number" id="inputValue" placeholder="Enter value">
+        <select id="unitFrom">
+          <option value="">--From Unit--</option>
+          ${unitOptions}
+        </select>
+        <select id="unitTo">
+          <option value="">--To Unit--</option>
+          ${unitOptions}
+        </select>
+      </div>
+
+      <button onclick="convert()">Convert</button>
+
+      <p>Result: <span id="result"></span></p>
+
+      <button class="restart-btn" onclick="restartConverter()">Restart</button>
+    </div>`;
+}
+
+function convert() {
+  const val = parseFloat(document.getElementById("inputValue").value);
+  const unitFrom = document.getElementById("unitFrom").value;
+  const unitTo = document.getElementById("unitTo").value;
+  const resultSpan = document.getElementById("result");
+  let resultText = '';
+
+  if (isNaN(val)) {
+    resultText = "Please enter a valid number.";
+  } else if (!unitFrom || !unitTo) {
+    resultText = "Please select both 'from' and 'to' units.";
+  } else if (unitFrom === unitTo) {
+    resultText = val.toFixed(4) + " " + getUnitDisplay(unitTo); // Same unit, just display value
+  }
+  else {
+    const conversionKey = `${unitFrom}_to_${unitTo}`;
+    const conversionFunc = conversionFormulas[conversionKey];
+
+    if (conversionFunc) {
+      const convertedValue = conversionFunc(val);
+      resultText = convertedValue.toFixed(4) + " " + getUnitDisplay(unitTo);
+    } else {
+      resultText = "Conversion not supported.";
+    }
+  }
+  resultSpan.innerText = resultText;
+}
+
+function restartConverter() {
+  // Reset the initial type selector
+  document.getElementById("conversionType").value = '';
+  // Clear the dynamically loaded converter box
+  document.getElementById("converterContainer").innerHTML = '';
+  // Clear any previous result message if it was there
+  document.getElementById("result") ? document.getElementById("result").innerText = '' : null;
+}
+  </script>
+</body>
+</html>
