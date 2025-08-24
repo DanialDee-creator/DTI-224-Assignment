@@ -44,6 +44,22 @@
     #result.valid {
       color: #28a745; /* green for success */
     }
+    a.back-btn {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #060606;   /* Gray color for Back */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 5px;
+  transition: background-color 0.3s;
+}
+
+a.back-btn:hover {
+  background-color: #555;
+}
+
   </style>
 </head>
 <body>
@@ -57,6 +73,7 @@
       <button type="button" onclick="goBack()">Back</button>
     </form>
     <p id="result"></p>
+    <a href="index.html" class="back-btn">Back</a>
   </div>
 
   <script>

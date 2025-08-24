@@ -65,6 +65,22 @@
       color: red;
       font-weight: bold;
     }
+    a.back-btn {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #0c0c0c;   /* Gray color for Back */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 5px;
+  transition: background-color 0.3s;
+}
+
+a.back-btn:hover {
+  background-color: #555;
+}
+
   </style>
 </head>
 <body>
@@ -74,10 +90,11 @@
     <input type="number" id="amountInput" placeholder="Enter amount in THB" min="1" />
     <br />
     <button onclick="calculateChange()">Submit</button>
-    <button onclick="goBack()">Back</button>
+    <button onclick="goBack()">Reset</button>
     <div id="result" class="result-container"></div>
+    <a href="index.html" class="back-btn">Back</a>
   </div>
-
+  
   <script>
     function calculateChange() {
       const amountInput = document.getElementById('amountInput');
